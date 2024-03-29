@@ -47,5 +47,24 @@ public class ScreenShotManager : MonoBehaviour
 
 
 
+    public void SavePhoto()
+    {
+        byte[] bytes;
+        string fileExt;
 
+        Texture2D texture = new Texture2D((int)Screen.width, (int)Screen.height, TextureFormat.RGB24, false);
+        texture = (Texture2D)PhotoDownload.mainTexture;
+
+        bytes = texture.EncodeToJPG();
+        fileExt = ".JPG";
+
+        Camera.main.targetTexture = null;
+        RenderTexture.active = null;
+
+
+        string filename = System.DateTime.Now.ToString("yyyyMMddHHmmss") + fileExt;
+        File.WriteAllBytes(Application.persistentDataPath + "/Photos" + "/" + filename, bytes);
+
+
+    }
 }
