@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class Loadjson : MonoBehaviour
 {
@@ -17,6 +15,7 @@ public class Loadjson : MonoBehaviour
     [SerializeField]
     public Images[] bannerImage;
 
+    public MeshRenderer[] Quad;
 
     // Start is called before the first frame update
     void Start()
@@ -40,12 +39,36 @@ public class Loadjson : MonoBehaviour
             if (request.isDone)
             {
                 bannerImage = JsonHelper.GetArray<Images>(request.downloadHandler.text);
+                StartCoroutine(GetImage());
             }
         }
     }
 
 
+    IEnumerator GetImage()
+    {
+        for (int i = 0; i < bannerImage.Length; i++)
+        {
+            using (UnityWebRequest w = UnityWebRequestTexture.GetTexture(bannerImage[i].URL))
+            {
+                yield return w.SendWebRequest();
 
+                if (w.result != UnityWebRequest.Result.Success)
+                {
+                    //Failed.
+                    Debug.Log(w.error);
+                }
+                else
+                {
+                    Texture2D tx = DownloadHandlerTexture.GetContent(w);
+                    Quad[i].material.mainTexture = tx;
+                    // apply texture.
+                }
+
+            }
+        }
+
+    }
 
 
 
